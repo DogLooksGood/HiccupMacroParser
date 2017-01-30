@@ -1,6 +1,4 @@
-(ns one.helper
-  (:require cljsjs.react
-            cljsjs.react.dom))
+(ns one.helper)
 
 (defn as-js-obj [m]
   (->> m

@@ -1,6 +1,5 @@
 (ns one.parser
-  (:require [clojure.zip :as zip]
-            [clojure.walk :as walk]
+  (:require [clojure.walk :as walk]
             [cljs.analyzer :as analyzer]))
 
 (defn component? [env x]

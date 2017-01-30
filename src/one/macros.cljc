@@ -1,8 +1,6 @@
 (ns one.macros
   #?(:cljs
-     (:require cljsjs.react
-               cljsjs.react.dom
-               [one.helper :as helper]
+     (:require [one.helper :as helper]
                [one.db :as db])
      :clj
      (:require [one.parser :as parser]

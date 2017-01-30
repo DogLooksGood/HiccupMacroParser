@@ -7,14 +7,12 @@
   :min-lein-version "2.7.1"
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.229"]
-                 [cljsjs/react "15.4.0-0"]
-                 [cljsjs/react-dom "15.4.2-0"]
-                 [cljsjs/react-datepicker "0.29.0-0"]
+                 [org.clojure/clojurescript "1.9.456"]
                  [org.clojure/core.async "0.2.391"                  
                   :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-figwheel "0.5.8"]
+            [lein-externs "0.1.6"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
@@ -51,6 +49,7 @@
                 :compiler {:output-to "resources/public/js/compiled/one.js"
                            :main one.core
                            :optimizations :advanced
+                           :infer-externs true
                            :pretty-print false}}]}
 
   :figwheel {;; :http-server-root "public" ;; default and assumes "resources"

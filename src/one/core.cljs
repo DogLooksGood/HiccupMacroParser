@@ -1,8 +1,5 @@
 (ns one.core
-  (:require cljsjs.react
-            cljsjs.react.dom
-            cljsjs.react-datepicker
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [one.helper :as helper]
             [one.dom :as dom]
