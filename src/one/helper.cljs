@@ -19,10 +19,10 @@
 (defn props [this]
   (js->clj (.-props this) :keywordize-keys true))
 
-(defn state [this]
+(defn state [^js/React.Component this]
   (js->clj (aget this "state") :keywordize-keys true))
 
-(defn set-state [this new-state]
+(defn set-state [^js/React.Component this new-state]
   (.setState this (clj->js new-state)))
 
 (defn mount [comp mount-point]

@@ -5,6 +5,8 @@
             [one.dom :as dom]
             [one.macros :refer-macros [defcomp defread defmut]]))
 
+(set! *warn-on-infer* true)
+
 (enable-console-print!)
 
 (defn on-js-reload [])
@@ -77,11 +79,13 @@
 
 (defread get-todos
   (fn [db]
-    (->> (get db :todos)
-         (filter (case (:filter db)
-                   :all identity
-                   :active (complement :completed?)
-                   :completed :completed?)))))
+    (let [f-type (:filter db)
+          f (case f-type
+              :all identity
+              :active (complement :completed?)
+              :completed :completed?)]
+      (->> (get db :todos)
+           (filter f)))))
 
 (defread count-active-todos
   (fn [db]
@@ -100,26 +104,26 @@
 (defn on-edit-todo [id]
   (begin-todo-edit id))
 
-(defn on-edit-keydown [id e]
-  (when (= 13 (.-which e))
-    (let [text (.. e -target -value)]
+(defn on-edit-keydown [id ^js/Event e]
+  (when (= 13 (aget e "which"))
+    (let [text (aget e "target" "value")]
       (when-not (str/blank? text)
         (update-todo-text [id text])))))
 
-(defn on-input-keydown [e]
-  (when (= 13 (.-which e))
-    (let [text (.. e -target -value)]
+(defn on-input-keydown [^js/Event e]
+  (when (= 13 (aget e "which"))
+    (let [text  (aget e "target" "value")]
       (when-not (str/blank? text)
         (add-todo text)))))
 
-(defn on-input-change [e]
-  (update-todo-input (.. e -target -value)))
+(defn on-input-change [^js/Event e]
+  (update-todo-input (aget e "target" "value")))
 
-(defn on-toggle-todo [id e]
+(defn on-toggle-todo [id ^js/Event e]
   (toggle-todo-completed id))
 
-(defn on-toggle-all [e]
-  (let [completed? (.. e -target -checked)]
+(defn on-toggle-all [^js/Event e]
+  (let [completed? (aget e "target" "value")]
     (toggle-all-todos completed?)))
 
 (defn on-change-filter [f]

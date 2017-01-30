@@ -50,8 +50,8 @@
                                         (fn [k# iref# old-val# new-val#]
                                           (binding [one.db/*new-state-val* new-val#]
                                             (let [new-state# (cljs.core/js-obj ~@(interleave read-names read-calls))]
-                                              (when-not (obj-eq new-state# (.-state this#))
-                                                (.setState this# new-state#)))))))))
+                                              (when-not (obj-eq new-state# (aget this# "state"))
+                                                (helper/set-state this# new-state#)))))))))
              :componentWillUnmount
              (fn []
                (cljs.core/this-as this#
