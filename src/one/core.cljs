@@ -20,8 +20,13 @@
     {:todo-id-serial 0
      :todos []
      :todo-edit -1
+     :todo-edit-text ""
      :input ""
      :filter :all}))
+
+(defmut update-todo-edit-text
+  (fn [db text]
+    (assoc db :todo-edit-text text)))
 
 (defmut update-todo-text
   (fn [db [id text]]
@@ -31,7 +36,8 @@
                 todo))]
       (-> db
           (update :todos (partial mapv update-by-id))
-          (assoc :todo-edit -1)))))
+          (merge {:todo-edit -1
+                  :todo-edit-text ""})))))
 
 (defmut update-todo-filter
   (fn [db filter]
@@ -39,7 +45,13 @@
 
 (defmut begin-todo-edit
   (fn [db id]
-    (assoc db :todo-edit id)))
+    (let [text (->> (:todos db)
+                    (filter #(= id (:id %)))
+                    first
+                    :text)]
+      (assoc db
+             :todo-edit id
+             :todo-edit-text text))))
 
 (defmut add-todo
   (fn [db text]
@@ -72,6 +84,10 @@
 ;; -----------------------------------------------------------------------------
 ;; Reads
 ;; -----------------------------------------------------------------------------
+
+(defread get-todo-edit-text
+  (fn [db]
+    (get db :todo-edit-text)))
 
 (defread get-todo-edit
   (fn [db]
@@ -110,6 +126,9 @@
 
 (defn on-edit-todo [id]
   (begin-todo-edit id))
+
+(defn on-edit [e]
+  (update-todo-edit-text (aget e "target" "value")))
 
 (defn on-edit-blur [id ^js/Event e]
   (let [text (aget e "target" "value")]
@@ -150,8 +169,10 @@
 (defcomp todo-item-edit [{:keys [id text]}]
   [dom/li {:className "editing"}
    [dom/input {:className "edit"
+               :value (get-todo-edit-text)
                :onBlur (partial on-edit-blur id)
                :onKeyDown (partial on-edit-keydown id)
+               :onChange on-edit
                :autoFocus true
                :style #js {:display "inline"}}]])
 
