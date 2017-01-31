@@ -114,10 +114,11 @@
 (defn on-edit-blur [id ^js/Event e]
   (let [text (aget e "target" "value")]
     (if (str/blank? text)
-      (.focus (.-target e))
+      (let [^js/HTMLInputElement ele (aget e "target")]
+        (.focus ele))
       (update-todo-text [id text]))))
   
-(defn on-edit-keydown [id ^js/Event e]
+(defn on-edit-keydown [id ^js/KeyboardEvent e]
   (when (= 13 (aget e "which"))
     (let [text (aget e "target" "value")]
       (when-not (str/blank? text)
