@@ -12,7 +12,7 @@
        (swap! i inc))))
 
 #?(:cljs
-   (defn obj-eq [obj1 obj2]
+   (defn obj-eq [^js/Object obj1 ^js/Object obj2]
      (let [ks1 (js/Object.keys obj1)]
        (and (= (.-length ks1)
                (.-length (js/Object.keys obj2)))

@@ -16,8 +16,8 @@
           (as-js-obj props)
           children)))
 
-(defn props [this]
-  (js->clj (.-props this) :keywordize-keys true))
+(defn props [^js/React.Component this]
+  (js->clj (aget this "props") :keywordize-keys true))
 
 (defn state [^js/React.Component this]
   (js->clj (aget this "state") :keywordize-keys true))

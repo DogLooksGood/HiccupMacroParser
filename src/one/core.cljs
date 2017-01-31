@@ -61,6 +61,10 @@
                 todo))]
       (update db :todos (partial mapv toggle-by-id)))))
 
+(defmut delete-todo
+  (fn [db id]
+    (update db :todos (partial filterv #(not= id (:id %))))))
+
 (defmut toggle-all-todos
   (fn [db completed?]
     (update db :todos (partial mapv #(assoc % :completed? completed?)))))
@@ -80,7 +84,7 @@
 (defread get-todos
   (fn [db]
     (let [f-type (:filter db)
-          f (case f-type
+          f (condp = f-type
               :all identity
               :active (complement :completed?)
               :completed :completed?)]
@@ -101,9 +105,18 @@
 ;; Event Handlers
 ;; -----------------------------------------------------------------------------
 
+(defn on-delete-todo [id]
+  (delete-todo id))
+
 (defn on-edit-todo [id]
   (begin-todo-edit id))
 
+(defn on-edit-blur [id ^js/Event e]
+  (let [text (aget e "target" "value")]
+    (if (str/blank? text)
+      (.focus (.-target e))
+      (update-todo-text [id text]))))
+  
 (defn on-edit-keydown [id ^js/Event e]
   (when (= 13 (aget e "which"))
     (let [text (aget e "target" "value")]
@@ -134,8 +147,9 @@
 ;; -----------------------------------------------------------------------------
 
 (defcomp todo-item-edit [{:keys [id text]}]
-  [dom/li
+  [dom/li {:className "editing"}
    [dom/input {:className "edit"
+               :onBlur (partial on-edit-blur id)
                :onKeyDown (partial on-edit-keydown id)
                :autoFocus true
                :style #js {:display "inline"}}]])
@@ -148,7 +162,9 @@
                 :onChange (partial on-toggle-todo id)
                 :type "checkbox"}]
     [dom/label {:onDoubleClick (partial on-edit-todo id)}
-     text]]])
+     text]
+    [dom/button {:className "destroy"
+                 :onClick (partial on-delete-todo id)}]]])
 
 (defcomp todo-list [props]
   (let [todos (get-todos)
